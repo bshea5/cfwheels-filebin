@@ -16,13 +16,13 @@ install:
   # Install Master Branch; nb, installed into folder of the git repo name, i.e neokoenig/cfwheels-ical4j
   - box install cfwheels/cfwheels
   # Install the Plugin: use gitHub path to get the absolute latest rather than the forgebox version
-  - box install neokoenig/cfwheels-ical4j
+  - box install bshea5/cfwheels-filebin
 before_script:
   # Master branch has a bunch of server.jsons we can use: lucee4 | lucee5 | cf10 | cf11 | cf2016
   - box server start cf2016
 # Type should be the name of the plugin | servername should reflect the server we've just started
 script: >
-  testResults="$(box wheels test type=ical4j servername=cf2016)";
+  testResults="$(box wheels test type=filebin servername=cf2016)";
   echo "$testResults";
   if ! grep -i "\Tests Complete: All Good!" <<< $testResults;  then exit 1; fi
 notifications:
