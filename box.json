@@ -1,0 +1,11 @@
+{
+    "name":"File Bin",
+    "version":"0.1.0",
+    "author":"Brandon Shea",
+    "location":"",
+    "directory":"/plugins/",
+    "createPackageDirectory":true,
+    "packageDirectory":"filebin",
+    "shortDescription":"CFWheels File Bin",
+    "keywords":"files,bin,upload,mime"
+}
