@@ -1,11 +1,15 @@
 {
-    "name":"File Bin",
+    "name":"CFWheels File Bin",
     "version":"0.1.0",
     "author":"Brandon Shea",
-    "location":"",
+    "location":"bshea5/cfwheels-filebin",
     "directory":"/plugins/",
     "createPackageDirectory":true,
     "packageDirectory":"filebin",
+    "type":"cfwheels-plugins",
+    "slug":"cfwheels-filebin",
     "shortDescription":"CFWheels File Bin",
-    "keywords":"files,bin,upload,mime"
+    "keywords":"files,bin,upload,mime,cfwheels",
+
+    "homepage": "https://github.com/bshea5/cfwheels-filebin"
 }
