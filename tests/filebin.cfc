@@ -14,6 +14,9 @@ component extends="wheels.Test"  hint="Unit Tests" {
 	 */
 	function packageTeardown() {
         directoryDelete(_testbin_._path_, true);
+
+        if (fileExists("testfileobj"))
+            fileDelete("testfileobj");
     }
     
     /**
@@ -27,10 +30,12 @@ component extends="wheels.Test"  hint="Unit Tests" {
     /**
 	 * Executes after every test case.
 	 */
-	// function teardown() {
-    //     fileClose(_fileObjInBin_);
-    //     fileClose(_fileObjInTemp_);
-	// }
+	function teardown() {
+        if (fileExists(_fileObjInBin_.path))
+            fileDelete(_fileObjInBin_.path);
+        if (fileExists(_fileObjInTemp_.path))
+            fileDelete(_fileObjInTemp_.path);
+	}
 
 
 	function Test_Default_Bin_Creation() {

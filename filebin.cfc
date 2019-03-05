@@ -36,12 +36,55 @@ mixin = "global" {
     /**
      * Get file object by opening the file;
      * Closing to make sure stream isn't left open, locking files.
-     * 
+     * The file object persists, even if the stream is closed; Return that.
      */
     public any function $fileobj(required string filepath) {
         var fileobj = fileOpen(filepath);
         fileClose(fileobj);
         return fileobj;
+    }
+
+    /**
+     * Confirm file is readable. Action take is determined by server engine.
+     *
+     * @file 
+     */
+    public boolean function $canReadFile(required file){
+        return (get('serverName') EQ "Lucee") 
+            ? $canReadFileLucee(file)
+            : $canReadFileAdobe(file);
+    }
+
+    /**
+     * Adobe has a func to check if a given arg is a file obj.
+     *
+     * @file 
+     */
+    public boolean function $canReadFileAdobe(required file) {
+        return isFileObject(file);
+    }
+
+    /**
+     * Confirm the file's path can be read using Java's file.io.
+     * 
+     * @file
+     */
+    public boolean function $canReadFileLucee(required file) {
+        var filepath = file?.path ?: "";
+        var myfile = createObject("java", "java.io.File");
+
+        return myfile.init(JavaCast("string", filepath)).canRead();
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @file
+     * @dest Path for files targeted destination.
+     */
+    public function $fileMove(required file, required string dest) {
+        var filearg = get('serverName') EQ "Lucee" ? file : file.path;
+        fileMove(filearg, dest);
     }
 
     /**
@@ -80,11 +123,11 @@ mixin = "global" {
          * 
          * @file
          */
-        local.mimeext = function(required any file) {
-            if (!isFileObject(file))
+        local.mimeext = function(required any file) {  
+            if (!$canReadFile(file))
                 return "";
 
-            var mime = fileGetMimeType(file.path, true);
+            var mime = fileGetMimeType(file, true);
             return structKeyExists(mimes, "#mime#") 
                 ? (mimes['#mime#']?.extension ?: "" ) : "";  
         };
@@ -107,7 +150,7 @@ mixin = "global" {
             // move it to target location with a UUID name 
             var filename = CreateUUID() & "." & ext;
     
-            fileMove(file.path, "#_path_#/#filename#");
+            $fileMove(file, "#_path_#/#filename#");
     
             return filename;
         };
@@ -198,7 +241,7 @@ mixin = "global" {
                 source = templatepath,
                 action = "populate",
                 destination = destination
-            ) {
+            ); {
                 for (var key in fields) {
                     cfpdfformparam(name = key, value = fields["#key#"]);
                 }
