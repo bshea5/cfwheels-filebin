@@ -77,7 +77,8 @@ mixin = "global" {
     }
 
     /**
-     * Undocumented function
+     * Wrapper for filemove(), as AdobeCF expects a file path while Lucee
+     * expects a file obj.
      *
      * @file
      * @dest Path for files targeted destination.
