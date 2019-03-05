@@ -25,8 +25,6 @@ mixin = "global" {
     /**
      * Get default valid mimes defined in mimetypes.cfm
      *
-     * @binname 
-     * @mimes 
      */
     public struct function $mimes() {
         include "mimetypes.cfm";
