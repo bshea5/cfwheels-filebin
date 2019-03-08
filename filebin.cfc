@@ -12,9 +12,6 @@ mixin = "global" {
         if (!directoryExists(expandPath("/files/"))) {
             directoryCreate("#expandPath("/")#files/");
         }
-        if (!directoryExists(expandPath("/files/templates/"))) {
-            directoryCreate("#expandPath("/files/")#/templates");
-        }
         if (!directoryExists(expandPath("/files/bin/"))) {
             directoryCreate("#expandPath("/files/")#/bin");
         }
@@ -81,7 +78,7 @@ mixin = "global" {
      * @file
      * @dest Path for files targeted destination.
      */
-    public function $fileMove(required file, required string dest) {
+    public void function $fileMove(required file, required string dest) {
         var filearg = get('serverName') EQ "Lucee" ? file : file.path;
         fileMove(filearg, dest);
     }
@@ -192,61 +189,6 @@ mixin = "global" {
 
         local.exists = function(required string filename) {
             return fileExists("#_path_ & '/' & filename#");
-        };
-
-        return local;
-    }
-
-    // consider moving this to its own plugin, with the above as a dependency.
-    /**
-     * Main entry for templates. actions
-     * `generate()`
-     * 
-     * [section: Plugins]
-     * [category: bin]
-     * 
-     * @binname Name of directory put files generated from templates.
-     */
-    public any function templates(
-        binname = ""
-    ) {
-        local._path_to_templates_ = ExpandPath("/files/templates");
-
-        // only PDF's allowed
-        local._bin_ = bin(
-            binname = binname, 
-            mimes = { "application/pdf": { "extension": "pdf" } }
-        );
-
-        /**
-         * Generate pdfs from a template.
-         * 
-         * @template Template to generate file from
-         * @field key:value's to use to fill out any form params
-         */
-        local.generate = function (
-            required string template,
-            struct fields = {}
-        ) {
-            var templatepath = _path_to_templates_ & template;
-
-            if (!fileExists(templatepath)) 
-                throw("Source template file does not exist.");
-    
-            var filename = CreateUUID() & '.pdf';
-            var destination = _bin_._path_ & filename;
-    
-            cfpdfform(
-                source = templatepath,
-                action = "populate",
-                destination = destination
-            ); {
-                for (var key in fields) {
-                    cfpdfformparam(name = key, value = fields["#key#"]);
-                }
-            };
-    
-            return filename;
         };
 
         return local;
