@@ -181,7 +181,7 @@ mixin = "global" {
             if (!exists(filename)) throw (
                 message = "Given file(#filename#) does not exist in #_path_#.",
                 errorcode = 404,
-                type = "File Does Not Exist"
+                type = "FILE!EXIST"
             );
 
             fileDelete("#_path_ & '/' & filename#");
