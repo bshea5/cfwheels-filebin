@@ -191,6 +191,32 @@ mixin = "global" {
             return fileExists("#_path_ & '/' & filename#");
         };
 
+        /**
+         * Zip files according to list of filenames
+         * @filenames List of files to zip. Move these to temp dir for zipping and place in bin or temp.
+         * @zipname Name of resulting zipped directory.
+         * @temp flag for saving to temp or to current bin path
+         */
+        local.zip = function(required string filenames, required string zipname, boolean temp = false) {
+            var dirToZip = _path_ & "zips" & zipname;
+            var destination = temp 
+                ? "ram://#zipname#.zip" 
+                : "#_path_##zipname#.zip";
+
+            directoryCreate("#dirToZip#");
+
+            for (filename in filenames) {
+                if (exists(filename))
+                    fileCopy("#_path_ #/#filename#", "#dirToZip#/#filename#");
+            }
+
+            cfzip(action="zip", source="#dirToZip#", file="#destination#", overwrite="true");
+
+            directoryDelete("#dirToZip#", true);
+
+            return destination;
+        };
+
         return local;
     }
 }

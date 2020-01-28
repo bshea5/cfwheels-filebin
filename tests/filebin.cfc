@@ -121,6 +121,24 @@ component extends="wheels.Test"  hint="Unit Tests" {
         assert(' mime EQ "" ');
     }
 
+    function Test_Zipping_Files() {
+        zippedFilePath = _testbin_.zip("#_fileObjInBin_.name#,#_fileObjInBin_.name#", "foo");
+        debug("zippedFilePath", true);
+        assert('fileExists(zippedFilePath)');
+
+        mime = fileGetMimeType(zippedFilePath, true);
+        assert(' mime EQ "application/zip" ');
+    }
+
+    function Test_Zipping_Files_To_RAM() {
+        zippedFilePath = _testbin_.zip("#_fileObjInBin_.name#,#_fileObjInBin_.name#", "foo", true);
+        debug("zippedFilePath", true);
+        assert('fileExists(zippedFilePath)');
+
+        mime = fileGetMimeType(zippedFilePath, true);
+        assert(' mime EQ "application/zip" ');
+    }
+
     // Create a valid file for testing, return the file object.
     // Make sure opened files are closed! They don't need to be open in order to
     // be processed, but leaving them open will cause locks to be left in place.
