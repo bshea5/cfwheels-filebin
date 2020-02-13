@@ -193,9 +193,9 @@ mixin = "global" {
 
         /**
          * Zip files according to list of filenames
-         * @filenames List of files to zip. Move these to temp dir for zipping and place in bin or temp.
+         * @filenames List of files to zip. Move these to some dir for zipping and place in bin or temp.
          * @zipname Name of resulting zipped directory.
-         * @temp flag for saving to temp or to current bin path
+         * @temp flag for saving to ram or to current bin path
          */
         local.zip = function(required string filenames, required string zipname, boolean temp = false) {
             var dirToZip = _path_ & "zips" & zipname;
@@ -203,14 +203,39 @@ mixin = "global" {
                 ? "ram://#zipname#.zip" 
                 : "#_path_##zipname#.zip";
 
-            directoryCreate("#dirToZip#");
-
-            for (filename in filenames) {
-                if (exists(filename))
-                    fileCopy("#_path_ #/#filename#", "#dirToZip#/#filename#");
+            // Remove dir if already exists, so we don't include pre-existing files.
+            // Dir could exist already if it wasn't deleted with a previous zip attempt.
+            if (directoryExists("#dirToZip#")) {
+                directoryDelete("#dirToZip#", true);
             }
 
-            cfzip(action="zip", source="#dirToZip#", file="#destination#", overwrite="true");
+            directoryCreate("#dirToZip#");
+
+            try {
+                for (filename in filenames) {
+                    if (exists(filename))
+                        fileCopy("#_path_ #/#filename#", "#dirToZip#/#filename#");
+                }
+
+                // check if we actually populated the directory with anything
+                if (arrayLen(directoryList("#dirToZip#")) LT 1) {
+                    throw(
+                        message = "Unable to zip any of the given files. " &  
+                        "This is probably because the given files couldn't be found. " &
+                        "Contact your site admin. ",
+                        errorcode = 404
+                    );
+                }
+    
+                cfzip(action="zip", source="#dirToZip#", file="#destination#", overwrite="true");
+            } catch (any e) {
+                // ensure directory we just created is always deleted.
+                directoryDelete("#dirToZip#", true);
+                throw(
+                    message = e.message,
+                    errorcode = e.errorcode
+                );
+            }
 
             directoryDelete("#dirToZip#", true);
 
