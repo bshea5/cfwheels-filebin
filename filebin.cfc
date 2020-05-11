@@ -192,15 +192,22 @@ mixin = "global" {
         };
 
         /**
-         * Zip files according to list of filenames
+         * Zip files according to list of filenames.
+         * 
          * @filenames List of files to zip. Move these to some dir for zipping and place in bin or temp.
          * @zipname Name of resulting zipped directory.
-         * @temp flag for saving to ram or to current bin path
+         * @deletefile Delete src file after zipping.
+         * @toram Flag for saving to ram or to current bin path.
          */
-        local.zip = function(required string filenames, required string zipname, boolean temp = false) {
+        local.zip = function(
+            required string filenames, 
+            required string zipname,
+            boolean deletefile = false, 
+            boolean toram = false
+        ) {
             var dirToZip = _path_ & "zips" & zipname;
-            var destination = temp 
-                ? "ram://#zipname#.zip" 
+            var destination = toram 
+                ? "ram://filebin/#zipname#.zip" 
                 : "#_path_##zipname#.zip";
 
             // Remove dir if already exists, so we don't include pre-existing files.
@@ -213,8 +220,13 @@ mixin = "global" {
 
             try {
                 for (filename in filenames) {
-                    if (exists(filename))
-                        fileCopy("#_path_ #/#filename#", "#dirToZip#/#filename#");
+                    if (exists(filename)) {
+                        if (deletefile) {
+                            fileMove("#_path_ #/#filename#", "#dirToZip#/#filename#");
+                        } else {
+                            fileCopy("#_path_ #/#filename#", "#dirToZip#/#filename#");
+                        }
+                    }
                 }
 
                 // check if we actually populated the directory with anything

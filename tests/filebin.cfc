@@ -131,7 +131,7 @@ component extends="wheels.Test"  hint="Unit Tests" {
     }
 
     function Test_Zipping_Files_To_RAM() {
-        zippedFilePath = _testbin_.zip("#_fileObjInBin_.name#,#_fileObjInBin_.name#", "foo", true);
+        zippedFilePath = _testbin_.zip("#_fileObjInBin_.name#,#_fileObjInBin_.name#", "foo", false, true);
         debug("zippedFilePath", true);
         assert('fileExists(zippedFilePath)');
 
