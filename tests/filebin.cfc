@@ -40,12 +40,13 @@ component extends="wheels.Test"  hint="Unit Tests" {
 
 	function Test_Default_Bin_Creation() {
         defaultbin = bin();
+        debug("defaultbin._path_", true);
         assert('directoryExists(defaultbin._path_)');
     }
 
     function Test_New_Bin_Creation() {
         assert('directoryExists(_testbin_._path_)');
-        assert('_testbin_._path_ EQ expandPath("/files/bin/testbincreatedbytestcase")');
+        assert('_testbin_._path_ EQ expandPath("/files/bin/testbincreatedbytestcase/")');
     }
 
     // Only test upload operation, delete operation will be tested else where.
@@ -122,20 +123,24 @@ component extends="wheels.Test"  hint="Unit Tests" {
     }
 
     function Test_Zipping_Files() {
-        zippedFilePath = _testbin_.zip("#_fileObjInBin_.name#,#_fileObjInBin_.name#", "foo");
-        debug("zippedFilePath", true);
-        assert('fileExists(zippedFilePath)');
+        zip = _testbin_.zip("#_fileObjInBin_.name#,#_fileObjInBin_.name#", "foo");
+        fullpath = "#_testbin_._path_#/#zip#";
+        debug("zip", true);
+        debug("fullpath", true);
+        assert('fileExists(fullpath)');
 
-        mime = fileGetMimeType(zippedFilePath, true);
+        mime = fileGetMimeType(fullpath, true);
         assert(' mime EQ "application/zip" ');
     }
 
     function Test_Zipping_Files_To_RAM() {
-        zippedFilePath = _testbin_.zip("#_fileObjInBin_.name#,#_fileObjInBin_.name#", "foo", false, true);
-        debug("zippedFilePath", true);
-        assert('fileExists(zippedFilePath)');
+        zip = _testbin_.zip("#_fileObjInBin_.name#,#_fileObjInBin_.name#", "foo", false, true);
+        fullpath = "#_testbin_._ram_##zip#";
+        debug("zip", true);
+        debug("fullpath", true);
+        assert('fileExists(fullpath)');
 
-        mime = fileGetMimeType(zippedFilePath, true);
+        mime = fileGetMimeType(fullpath, true);
         assert(' mime EQ "application/zip" ');
     }
 

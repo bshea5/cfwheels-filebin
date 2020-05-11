@@ -112,7 +112,8 @@ mixin = "global" {
             }
         }
 
-        local._path_ = ExpandPath("/files/bin/#binname#");
+        local._path_ = ExpandPath("/files/bin/#binname#/");
+        local._ram_ = "ram://";
 
         /**
          * Get file extension for given file, according to its actual mime type.
@@ -184,11 +185,12 @@ mixin = "global" {
                 type = "FILE!EXIST"
             );
 
-            fileDelete("#_path_ & '/' & filename#");
+            fileDelete("#_path_ & filename#");
         };
 
         local.exists = function(required string filename) {
-            return fileExists("#_path_ & '/' & filename#");
+            writelog("#_path_ & filename#");
+            return fileExists("#_path_ & filename#");
         };
 
         /**
@@ -207,7 +209,7 @@ mixin = "global" {
         ) {
             var dirToZip = _path_ & "zips" & zipname;
             var destination = toram 
-                ? "ram://filebin/#zipname#.zip" 
+                ? "#_ram_##zipname#.zip" 
                 : "#_path_##zipname#.zip";
 
             // Remove dir if already exists, so we don't include pre-existing files.
@@ -222,9 +224,9 @@ mixin = "global" {
                 for (filename in filenames) {
                     if (exists(filename)) {
                         if (deletefile) {
-                            fileMove("#_path_ #/#filename#", "#dirToZip#/#filename#");
+                            fileMove("#_path_##filename#", "#dirToZip#/#filename#");
                         } else {
-                            fileCopy("#_path_ #/#filename#", "#dirToZip#/#filename#");
+                            fileCopy("#_path_##filename#", "#dirToZip#/#filename#");
                         }
                     }
                 }
@@ -251,7 +253,7 @@ mixin = "global" {
 
             directoryDelete("#dirToZip#", true);
 
-            return destination;
+            return "#zipname#.zip";
         };
 
         return local;
