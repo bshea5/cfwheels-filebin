@@ -223,10 +223,15 @@ mixin = "global" {
             try {
                 for (filename in filenames) {
                     if (exists(filename)) {
+                        // Strip out any file path from name if it was saved with 
+                        // one. This might happen if using a nested directory. We
+                        // do this so that is doesn't change to target move/copy to. 
+                        var filePart = listLast(filename, "/\");
+
                         if (deletefile) {
-                            fileMove("#_path_##filename#", "#dirToZip#/#filename#");
+                            fileMove("#_path_##filename#", "#dirToZip#/#filePart#");
                         } else {
-                            fileCopy("#_path_##filename#", "#dirToZip#/#filename#");
+                            fileCopy("#_path_##filename#", "#dirToZip#/#filePart#");
                         }
                     }
                 }
